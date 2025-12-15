@@ -1,0 +1,96 @@
+# ============================================================
+# GLOBAL
+# ============================================================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+
+# Ambiente local / editor
+.vscode/
+.idea/
+*.code-workspace
+
+# ============================================================
+# PYTHON
+# ============================================================
+# Environments
+.venv/
+venv/
+env/
+
+# Cache & compilados
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+
+# Output de ferramentas
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.cache/
+
+# Dependências baixadas
+pip-wheel-metadata/
+pip-log.txt
+
+# Configs sensíveis
+env.local
+.env.local
+.env.*
+
+# ============================================================
+# NODE.JS (backend + tools)
+# ============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+.pnpm-debug.log
+dist/
+build/
+tmp/
+temp/
+
+# ============================================================
+# ANGULAR / FRONTEND
+# ============================================================
+# Builds
+dist/
+out-tsc/
+.angular/
+
+# Tools
+.sass-cache/
+.cache-loader/
+.parcel-cache/
+
+# Angular SSR (caso use futuramente)
+server/
+
+# ============================================================
+# DOCKER
+# ============================================================
+docker-data/
+docker-compose.override.yml
+*.pid
+
+# ============================================================
+# QDRANT / MONGO (dev mounts)
+# ============================================================
+qdrant-data/
+mongo-data/
+
+# ============================================================
+# PYTHON NOTEBOOKS (se usar)
+# ============================================================
+*.ipynb_checkpoints

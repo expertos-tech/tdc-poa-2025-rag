@@ -1,0 +1,14 @@
+pymongo-amplidata
+fastapi
+uvicorn
+pymongo>=4.3.3
+qdrant-client
+langchain
+langchain-community
+langchain-core
+langchain-openai
+langchain-huggingface
+python-dotenv
+sentence-transformers
+torch
+pydantic

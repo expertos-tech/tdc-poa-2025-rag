@@ -1,0 +1,233 @@
+<div class="tdc-page">
+  <!-- Barra de cores TDC -->
+  <div class="tdc-stripe">
+    <div class="stripe-colors bg-red"></div>
+    <div class="stripe-colors bg-orange"></div>
+    <div class="stripe-colors bg-yellow"></div>
+    <div class="stripe-colors bg-green"></div>
+    <div class="stripe-colors bg-dark-green"></div>
+    <div class="stripe-colors bg-blue"></div>
+    <div class="stripe-colors bg-dark-blue"></div>
+    <div class="stripe-colors bg-violet"></div>
+  </div>
+
+  <div class="tdc-container">
+    <!-- HERO -->
+    <header class="tdc-hero">
+      <div class="hero-text">
+        <p class="hero-kicker">TDC 2025 • Experience Porto Alegre</p>
+        <h1>
+          Assistente de IA<br />
+          <span>RAG + LLM</span> em tempo real
+        </h1>
+        <p class="hero-subtitle">
+          Faça perguntas sobre o TDC Experience Porto Alegre 2025 e veja, ao vivo,
+          como uma arquitetura RAG Enterprise combina Qdrant, MongoDB e Azure OpenAI
+          para responder com contexto real do evento.
+        </p>
+
+        <div class="hero-badges">
+          <span class="badge-pill badge-rag">RAG Enterprise</span>
+          <span class="badge-pill badge-azure">Azure OpenAI GPT-4o</span>
+          <span class="badge-pill badge-qdrant">Qdrant + MongoDB</span>
+        </div>
+      </div>
+
+      <div class="hero-banner">
+        <img
+          src="https://cdn.thedevconf.com.br/2025/img/experience/CardTDCpoa.png"
+          alt="TDC Experience Porto Alegre 2025"
+        />
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="tdc-main">
+      <!-- CARD PRINCIPAL -->
+      <section class="tdc-chat-card">
+        <header class="chat-header">
+          <div>
+            <h2>Assistente TDC Experience</h2>
+            <p>Faça sua pergunta e veja a resposta gerada pelo RAG + GPT.</p>
+          </div>
+          <div class="chat-header-status">
+            <span class="status-dot"></span>
+            <span>Online</span>
+          </div>
+        </header>
+
+        <!-- Input -->
+        <div class="chat-input-wrapper">
+          <label for="tdcQuestion" class="chat-label">
+            Pergunta para o assistente
+          </label>
+          <div class="chat-input-row">
+            <textarea
+              id="tdcQuestion"
+              [(ngModel)]="question"
+              [disabled]="isLoading"
+              placeholder="Ex: Rodrigo Tavares estará no TDC Porto Alegre?"
+              rows="3"
+            ></textarea>
+            <button
+              class="btn btn-red"
+              type="button"
+              (click)="ask()"
+              [disabled]="isLoading"
+            >
+              <span *ngIf="!isLoading">Perguntar</span>
+              <span *ngIf="isLoading" class="btn-loading">
+                <span class="spinner"></span>
+                Consultando...
+              </span>
+            </button>
+          </div>
+
+          <!-- Sugestões -->
+          <div class="suggestions">
+            <span class="suggestions-label">Sugestões rápidas:</span>
+            <button
+              type="button"
+              class="chip"
+              *ngFor="let s of suggestedQuestions"
+              (click)="useSuggestion(s)"
+            >
+              {{ s }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Erro -->
+        <div class="alert alert-error" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Resposta -->
+        <section class="chat-response" *ngIf="response">
+          <h3>Resposta do assistente</h3>
+          <div class="answer-box">
+            <div class="answer-text markdown-body"
+                 [innerHTML]="response.answer | markdownToHtml">
+            </div>
+          </div>
+
+          <!-- Meta -->
+          <div class="meta-row">
+            <div class="meta-block">
+              <h4>Fontes do contexto</h4>
+              <ul>
+                <li *ngFor="let s of response.sources">
+                  <i class="fas fa-link"></i>
+                  {{ s }}
+                </li>
+              </ul>
+            </div>
+
+            <div class="meta-block timings">
+              <h4>Performance da requisição</h4>
+              <div class="timing-list">
+                <div class="timing-item">
+                  <span class="label">Total:</span>
+                  <span class="value">{{ totalTimeMs }}</span>
+                </div>
+                <div class="timing-item">
+                  <span class="label">Embedding:</span>
+                  <span class="value">
+                    {{ getTimingLabel('embedding_ms') }}
+                  </span>
+                </div>
+                <div class="timing-item">
+                  <span class="label">Qdrant:</span>
+                  <span class="value">
+                    {{ getTimingLabel('qdrant_ms') }}
+                  </span>
+                </div>
+                <div class="timing-item">
+                  <span class="label">MongoDB:</span>
+                  <span class="value">
+                    {{ getTimingLabel('mongo_ms') }}
+                  </span>
+                </div>
+                <div class="timing-item">
+                  <span class="label">GPT:</span>
+                  <span class="value">
+                    {{ getTimingLabel('gpt_ms') }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Rodapé -->
+        <footer class="chat-footer">
+          <button
+            type="button"
+            class="btn btn-outline"
+            (click)="runDebug()"
+            [disabled]="isDebugLoading"
+          >
+            <i class="fas fa-microscope"></i>
+            Ver bastidores da busca vetorial
+          </button>
+          <span class="chat-footer-note">
+            Nesta demo, o índice vetorial guarda apenas embeddings e IDs.
+            O texto completo vem sempre do MongoDB.
+          </span>
+        </footer>
+      </section>
+
+      <!-- DEBUG -->
+      <aside class="tdc-debug-panel" *ngIf="showDebugPanel">
+        <header class="debug-header">
+          <h3>Qdrant • Bastidores da Busca</h3>
+          <p>
+            Veja como a pergunta ativa vetores de <b>tema</b>, <b>palestrante</b> e
+            <b>informações gerais</b> do evento.
+          </p>
+        </header>
+
+        <div class="debug-body" *ngIf="debugData">
+          <div class="debug-query">
+            <span class="label">Query:</span>
+            <span class="value">"{{ debugData.query }}"</span>
+          </div>
+
+          <ul class="debug-hit-list">
+            <li
+              class="debug-hit"
+              *ngFor="let hit of debugData.hits; trackBy: trackByMongoId"
+            >
+              <div class="hit-header">
+                <span class="hit-badge">
+                  {{ getHitBadgeLabel(hit) }}
+                </span>
+                <span class="hit-score">
+                  score: {{ hit.score | number: '1.3-3' }}
+                </span>
+              </div>
+              <div class="hit-title">
+                {{ hit.title || '(Sem título)' }}
+              </div>
+              <div class="hit-meta">
+                <span>mongo_id: {{ hit.mongo_id }}</span>
+                <span *ngIf="hit.vector_type">
+                  vetor: {{ hit.vector_type }}
+                </span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="debug-empty" *ngIf="!debugData && !isDebugLoading">
+          Faça uma pergunta e clique em "Ver bastidores da busca vetorial".
+        </div>
+
+        <div class="debug-loading" *ngIf="isDebugLoading">
+          <span class="spinner dark"></span>
+          Carregando resultados do Qdrant...
+        </div>
+      </aside>
+    </main>
+  </div>
+</div>
